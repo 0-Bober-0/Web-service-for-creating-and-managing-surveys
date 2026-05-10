@@ -15,7 +15,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  NODE_VERSION: "22"
+  NODE_VERSION: "20"
 
 jobs:
   backend:
@@ -97,12 +97,18 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          node-version: "20"
+
+      - name: Show Node and npm versions
+        run: |
+          node -v
+          npm -v
+
+      - name: Clean npm cache
+        run: npm cache clean --force
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Build frontend
         run: npm run build
@@ -121,14 +127,13 @@ jobs:
       - name: Set up Node.js for frontend dist
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          node-version: "20"
 
       - name: Build frontend dist
         working-directory: frontend
         run: |
-          npm ci
+          npm cache clean --force
+          npm install --no-audit --no-fund
           npm run build
 
       - name: Create .env file
